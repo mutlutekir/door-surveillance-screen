@@ -44,33 +44,25 @@ streams:
     - "ffmpeg:door_camera#video=mjpeg#width=480#height=480#q:v=3#fps=2"
 ```
 
-Installation & Configuration
-Copy the door-surveillance-screen.yaml contents into a new ESPHome node.
+## Installation & Configuration
 
-Ensure you have the materialdesignicons-webfont.ttf file placed in a fonts/ folder relative to your ESPHome configuration directory.
+1. Copy the `door-surveillance-screen.yaml` contents into a new ESPHome node.
+2. Ensure you have the `materialdesignicons-webfont.ttf` file placed in a `fonts/` folder relative to your ESPHome configuration directory.
+3. Update the following placeholders in the YAML with your own details:
+   - `YOUR_API_KEY_HERE`: Your ESPHome API encryption key.
+   - `YOUR_FALLBACK_PASSWORD_HERE`: The fallback AP password.
+   - `weather.your_weather_entity_hourly`: Search and replace this with your actual Home Assistant weather entity (e.g., `weather.home`).
+   - `binary_sensor.your_door_sensor`: Search and replace with the door sensor that should trigger the screen.
+   - `http://YOUR_GO2RTC_IP:1984/api/stream.mjpeg?src=door_panel_stream`: Update this URL to point to your live camera stream (matching the go2rtc config above).
+4. Flash the code to your ESP32-S3. 
 
-Update the following placeholders in the YAML with your own details:
+## How It Works
 
-YOUR_API_KEY_HERE: Your ESPHome API encryption key.
+- **Vacuum Background Logic**: When the screen is turned off, the ESP32 doesn't drop the connection. Instead, it silently "vacuums" and discards the incoming frames. This prevents the go2rtc server from putting ffmpeg to sleep, ensuring a fresh frame is instantly ready the millisecond you wake the screen.
+- **Sleep Mode**: The backlight turns off automatically after 30 seconds of inactivity to save power and reduce heat.
+- **Waking Up**: The screen can be woken up by a physical touch, or via Home Assistant automations triggering the exposed `Screen` switch.
+- **Smart Routing**: If triggered by the door opening, it slides in the Weather dashboard. If triggered by a motion sensor (or tapped while on the weather screen), it slides in the Camera feed.
 
-YOUR_FALLBACK_PASSWORD_HERE: The fallback AP password.
+## License
 
-weather.your_weather_entity_hourly: Search and replace this with your actual Home Assistant weather entity (e.g., weather.home).
-
-binary_sensor.your_door_sensor: Search and replace with the door sensor that should trigger the screen.
-
-http://YOUR_GO2RTC_IP:1984/api/stream.mjpeg?src=door_panel_stream: Update this URL to point to your live camera stream (matching the go2rtc config above).
-
-Flash the code to your ESP32-S3.
-
-How It Works
-Vacuum Background Logic: When the screen is turned off, the ESP32 doesn't drop the connection. Instead, it silently "vacuums" and discards the incoming frames. This prevents the go2rtc server from putting ffmpeg to sleep, ensuring a fresh frame is instantly ready the millisecond you wake the screen.
-
-Sleep Mode: The backlight turns off automatically after 30 seconds of inactivity to save power and reduce heat.
-
-Waking Up: The screen can be woken up by a physical touch, or via Home Assistant automations triggering the exposed Screen switch.
-
-Smart Routing: If triggered by the door opening, it slides in the Weather dashboard. If triggered by a motion sensor (or tapped while on the weather screen), it slides in the Camera feed.
-
-License
 MIT
