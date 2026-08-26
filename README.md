@@ -52,16 +52,21 @@ streams:
    - `YOUR_API_KEY_HERE`: Your ESPHome API encryption key.
    - `YOUR_FALLBACK_PASSWORD_HERE`: The fallback AP password.
    - `weather.your_weather_entity_hourly`: Search and replace this with your actual Home Assistant weather entity (e.g., `weather.home`).
-   - `binary_sensor.your_door_sensor`: Search and replace with the door sensor that should trigger the screen.
+   - `binary_sensor.your_door_sensor`: Search and replace with the physical door sensor entity that should trigger the screen to show the weather.
    - `http://YOUR_GO2RTC_IP:1984/api/stream.mjpeg?src=door_panel_stream`: Update this URL to point to your live camera stream (matching the go2rtc config above).
 4. Flash the code to your ESP32-S3. 
 
-## How It Works
+## Home Assistant Automations (How to Trigger)
+
+The panel uses smart routing based on the door state. To fully utilize this panel, create simple automations in Home Assistant:
+
+* **Trigger Camera via Motion/Doorbell:** Create an automation in Home Assistant that turns ON the `switch.screen` (exposed by this ESPHome device) whenever your external motion sensor or doorbell is triggered. Since the physical door is closed, the panel will smartly slide into the **Camera** view.
+* **Trigger Weather via Door Open:** This is handled natively in the YAML. When the configured `binary_sensor.your_door_sensor` opens, the screen wakes up automatically and slides into the **Weather** view.
+
+## How It Works Under the Hood
 
 - **Vacuum Background Logic**: When the screen is turned off, the ESP32 doesn't drop the connection. Instead, it silently "vacuums" and discards the incoming frames. This prevents the go2rtc server from putting ffmpeg to sleep, ensuring a fresh frame is instantly ready the millisecond you wake the screen.
 - **Sleep Mode**: The backlight turns off automatically after 30 seconds of inactivity to save power and reduce heat.
-- **Waking Up**: The screen can be woken up by a physical touch, or via Home Assistant automations triggering the exposed `Screen` switch.
-- **Smart Routing**: If triggered by the door opening, it slides in the Weather dashboard. If triggered by a motion sensor (or tapped while on the weather screen), it slides in the Camera feed.
 
 ## License
 
