@@ -42,7 +42,7 @@ streams:
   # The optimized stream for the ESP32 Panel (480x480, high quality, 2 FPS)
   door_panel_stream:
     - "ffmpeg:door_camera#video=mjpeg#width=480#height=480#q:v=3#fps=2"
-
+```
 
 Installation & Configuration
 Copy the door-surveillance-screen.yaml contents into a new ESPHome node.
